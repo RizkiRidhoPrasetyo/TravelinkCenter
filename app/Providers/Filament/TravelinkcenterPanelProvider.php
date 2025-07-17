@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Closure;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -17,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\Http\Request;
 
 class TravelinkcenterPanelProvider extends PanelProvider
 {
@@ -26,7 +28,7 @@ class TravelinkcenterPanelProvider extends PanelProvider
             ->default()
             ->id('travelinkcenter')
             ->path('travelinkcenter')
-            ->login()
+            ->login(false)
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -53,6 +55,22 @@ class TravelinkcenterPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                EnsureAdminOnly::class, // ← kita tambahkan ini di bawah
             ]);
+    }
+}
+
+// Middleware kecil langsung di file yang sama:
+class EnsureAdminOnly
+{
+    public function handle(Request $request, Closure $next)
+    {
+        $user = auth()->user();
+
+        if (! $user || $user->role !== 'admin') {
+            return redirect('/travelinkclub');
+        }
+
+        return $next($request);
     }
 }

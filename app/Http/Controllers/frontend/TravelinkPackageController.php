@@ -11,10 +11,16 @@ use Illuminate\Support\Facades\Validator;
 
 class TravelinkPackageController extends Controller
 {
+    public function show($id)
+    {
+        $package = TravelinkPackage::findOrFail($id);
+        return view('frontend.packagetravel.show', compact('package'));
+    }
     // ...existing code...
     public function index()
     {
-        return view('frontend.packagetravel.index');
+        $packages = \App\Models\TravelinkPackage::all();
+        return view('frontend.packagetravel.index', compact('packages'));
     }
 
     public function club()

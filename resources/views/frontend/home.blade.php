@@ -9,9 +9,9 @@
             <div class="carousel-item active">
                 <div class="row justify-content-center align-items-center text-center" style="background-image: url('{{ asset('assets/images/malang-hero.jpg') }}'); background-size: cover; background-position: center; height: 500px; position: relative;">
                     <div class="col-12 text-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
-                        <h1 class="display-4 fw-bold" style="color: white; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);">Explore Malang</h1>
-                        <p class="lead" style="color: white; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">Discover Malang's best destinations.</p>
-                        <a href="{{ url('/Paket-travel') }}" class="btn btn-lg rounded-pill px-4 shadow" style="background-color: #ffc107; color: black;">Find Out Now</a>
+                        <h1 class="display-4 fw-bold" style="color: white; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);">Follow Our Instagram!</h1>
+                        <p class="lead" style="color: white; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">Get promo info, travel inspiration, and the latest updates from Travelink Center on Instagram <b>@travelinkcenter</b>.</p>
+                        <a href="https://instagram.com/travelinkcenter" target="_blank" rel="noopener" class="btn btn-lg rounded-pill px-4 shadow" style="background-color: #ffc107; color: black;">Kunjungi Instagram</a>
                     </div>
                     <div class="position-absolute w-100 h-100" style="top: 0; left: 0; z-index: 1;">
                         <img src="{{ asset('assets/images/malanghub.jpg') }}" alt="Malang Icon" class="img-fluid w-100 h-100" style="object-fit: cover;">
@@ -110,7 +110,7 @@
                         <div class="position-absolute" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px;"> <!-- Promo Price overlay -->
                             <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $deal->promo_price }}</span>
                         </div>
-                        <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ $deal->images[0] ?? 'default.jpg' }}', '{{ $deal->name }}', '{{ $deal->region }}', '{{ $deal->price }}', '{{ $deal->promo_price }}', '{{ $deal->hashtag }}')">View Detail</a>
+                        <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ Storage::url($deal->images[0] ?? 'default.jpg') }}', '{{ $deal->name }}', '{{ $deal->region }}', '{{ $deal->price }}', '{{ $deal->promo_price }}', '{{ $deal->hashtag }}', {{ $deal->id }}, `{{ str_replace(['`', "'", "\n", "\r"], ['\\`', "\\'", ' ', ' '], $deal->description) }}`)">View Detail</a>
                     </div>
                 </div>
             </div>
@@ -132,7 +132,7 @@
                         <div class="position-absolute" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px;"> <!-- Promo Price overlay -->
                             <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $destination->promo_price }}</span>
                         </div>
-                        <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ $destination->images[0] ?? 'default.jpg' }}', '{{ $destination->name }}', '{{ $destination->region }}', '{{ $destination->price }}', '{{ $destination->promo_price }}', '{{ $destination->hashtag }}')">View Detail</a>
+                        <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ Storage::url($destination->images[0] ?? 'default.jpg') }}', '{{ $destination->name }}', '{{ $destination->region }}', '{{ $destination->price }}', '{{ $destination->promo_price }}', '{{ $destination->hashtag }}', {{ $destination->id }}, `{{ str_replace(['`', "'", "\n", "\r"], ['\\`', "\\'", ' ', ' '], $destination->description) }}`)">View Detail</a>
                     </div>
                 </div>
             </div>
@@ -266,22 +266,26 @@
     <!-- Include Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
 let currentPackageId = null;
-function populateModal(image, title, region, price, promoPrice, hashtag, id = null) {
+function populateModal(image, title, region, price, promoPrice, hashtag, id = null, description = '') {
     document.getElementById('modalImage').src = image;
     document.getElementById('modalTitle').textContent = title;
     document.getElementById('modalRegion').textContent = `Region: ${region}`;
-    document.getElementById('modalPrice').textContent = `Price: ${price}`;
-    document.getElementById('modalPromoPrice').textContent = `Promo Price: ${promoPrice}`;
+    document.getElementById('modalPrice').textContent = '';
+    document.getElementById('modalPromoPrice').textContent = '';
+    document.getElementById('modalDescription').textContent = description ? `Deskripsi Wisata: ${description}` : '';
     document.getElementById('modalHashtag').textContent = `Hashtag: ${hashtag}`;
     currentPackageId = id;
     // Set booking button link
-    if (id) {
-        $('#modalBookingBtn').off('click').on('click', function() {
-            window.location.href = '/booking/' + id;
-        });
-    }
+    $('#modalBookingBtn').off('click').on('click', function() {
+        @if(!auth()->check())
+            window.location.href = '/login';
+        @else
+            if (id) window.location.href = '/booking/' + id;
+        @endif
+    });
     // Hide comments section initially
     $('#modalCommentsSection').hide();
     $('#modalCommentsList').empty();
@@ -298,6 +302,10 @@ function updateLikeStatus() {
 $(function() {
     // Show/hide comments section in modal
     $('#modalCommentBtn').on('click', function() {
+        @if(!auth()->check())
+            window.location.href = '/login';
+            return;
+        @endif
         $('#modalCommentsSection').toggle();
         if ($('#modalCommentsSection').is(':visible') && $('#modalCommentsList').is(':empty') && currentPackageId) {
             $.get('/package/' + currentPackageId + '/comments', function(data) {
@@ -312,6 +320,10 @@ $(function() {
 
     // Submit comment in modal
     $('#modalCommentForm').on('submit', function(e) {
+        @if(!auth()->check())
+            window.location.href = '/login';
+            return false;
+        @endif
         e.preventDefault();
         if (!currentPackageId) return;
         var input = $(this).find('input[name=comment]');
@@ -337,6 +349,10 @@ $(function() {
     });
 
     $('#modalLikeBtn').on('click', function() {
+        @if(!auth()->check())
+            window.location.href = '/login';
+            return;
+        @endif
         if (!currentPackageId) return;
         $.post({
             url: '/package/' + currentPackageId + '/like',
@@ -344,12 +360,6 @@ $(function() {
             success: function(data) {
                 $('#modalLikeCount').text(data.count);
                 $('#modalLikeText').text(data.liked ? 'Unlike' : 'Like');
-            },
-            error: function(xhr) {
-                if(xhr.status === 401) {
-                    // Show login modal instead of alert
-                    // Jika ada login modal, bisa ditampilkan di sini
-                }
             }
         });
     });

@@ -33,9 +33,23 @@ public function create()
             'password' => ['required'],
         ]);
 
+
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('travelinkclub'));
+            $user = auth()->user();
+            // Jika admin, redirect ke dashboard admin
+            if ($user->role === 'admin') {
+                return redirect()->intended('/travelinkcenter');
+            }
+            // Jika user biasa, redirect ke travelinkclub dan pastikan tidak bisa akses dashboard admin
+            if ($user->role === 'user') {
+                return redirect()->intended(route('travelinkclub'));
+            }
+            // Jika role tidak dikenali, logout dan tolak akses
+            Auth::logout();
+            return back()->withErrors([
+                'email' => 'Unauthorized access.'
+            ]);
         }
 
         return back()->withErrors([

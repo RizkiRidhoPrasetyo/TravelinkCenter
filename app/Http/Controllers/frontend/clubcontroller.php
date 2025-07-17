@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\frontend;
+namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\TravelinkPackage;
 
-class clubcontroller extends Controller
+class ClubController extends Controller
 {
     public function index(){
         $travelinkPackages = TravelinkPackage::all();

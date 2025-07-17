@@ -7,6 +7,7 @@ use App\Http\Controllers\PackageCommentController;
 use App\Http\Controllers\PackageLikeController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\Frontend\MemberCardController;
+use App\Http\Controllers\Frontend\clubcontroller;
 Route::get('/member-card/pdf', [MemberCardController::class, 'pdf'])->middleware('auth')->name('member.card.pdf');
 
 
@@ -37,7 +38,7 @@ Route::get('/', function () {
 });
 
 
-Route::get('/travelinkclub', [\App\Http\Controllers\Frontend\clubcontroller::class, 'index'])->name('travelinkclub');
+Route::get('/travelinkclub', [clubcontroller::class, 'index'])->name('travelinkclub');
 
 
 
@@ -45,22 +46,22 @@ Route::get('/travelinkclub', [\App\Http\Controllers\Frontend\clubcontroller::cla
 require __DIR__.'/auth.php';
 
 // Route paket travelink
-use App\Http\Controllers\frontend\TravelinkPackageController as TravelinkPackageControllerAlias;
-Route::get('/Paket-travel', [TravelinkPackageControllerAlias::class, 'index']);
+Route::get('/Paket-travel', [TravelinkPackageController::class, 'index'])->name('packagetravel.index');
 Route::post('/packages/{id}/like', [InteractionController::class, 'like'])->name('packages.like');
 Route::post('/packages/{id}/comment', [InteractionController::class, 'comment'])->name('packages.comment');
 Route::post('/package/{id}/comment', [PackageCommentController::class, 'store'])->name('package.comment');
 Route::get('/package/{id}/comments', [PackageCommentController::class, 'list'])->name('package.comments');
-Route::get('/travelinkclub/benefits', [TravelinkPackageControllerAlias::class, 'club'])->name('travelinkclub.benefits');
+Route::get('/travelinkclub/benefits', [TravelinkPackageController::class, 'club'])->name('travelinkclub.benefits');
 Route::get('/benefits', function () {
     return view('frontend.club'); // Sesuaikan view jika diperlukan
 })->name('benefits');
-Route::get('/top-destinations', [TravelinkPackageControllerAlias::class, 'topDestinations'])->name('top-destinations');
+Route::get('/top-destinations', [TravelinkPackageController::class, 'topDestinations'])->name('top-destinations');
 
-Route::get('/top-deals', [TravelinkPackageControllerAlias::class, 'topDeals'])->name('top-deals');
+Route::get('/top-deals', [TravelinkPackageController::class, 'topDeals'])->name('top-deals');
 
 Route::get('/lifestyle', function () {
     return view('frontend.lifestyle');
 })->name('lifestyle');
 Route::post('/package/{id}/like', [PackageLikeController::class, 'toggle'])->name('package.like');
 Route::get('/package/{id}/like-count', [PackageLikeController::class, 'count'])->name('package.like.count');
+Route::get('/travel/{id}', [\App\Http\Controllers\Frontend\TravelinkPackageController::class, 'show'])->name('travel.single');

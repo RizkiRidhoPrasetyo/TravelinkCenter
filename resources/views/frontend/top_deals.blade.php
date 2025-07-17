@@ -43,7 +43,7 @@
                     <div class="position-absolute" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px;"> <!-- Promo Price overlay -->
                         <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $deal->promo_price }}</span>
                     </div>
-                    <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ $deal->images[0] ?? 'default.jpg' }}', '{{ $deal->name }}', '{{ $deal->region }}', '{{ $deal->price }}', '{{ $deal->promo_price }}', '{{ $deal->hashtag }}')">
+                    <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ $deal->images[0] ?? 'default.jpg' }}', '{{ $deal->name }}', '{{ $deal->region }}', '{{ $deal->price }}', '{{ $deal->promo_price }}', '{{ $deal->hashtag }}', {{ $deal->id }}, `{{ str_replace(['`', "'", "\n", "\r"], ['\\`', "\\'", ' ', ' '], $deal->description) }}`)">
                         View Detail
                     </a>
                 </div>
@@ -102,8 +102,9 @@ function populateModal(image, title, region, price, promoPrice, hashtag, id = nu
     document.getElementById('modalImage').src = image;
     document.getElementById('modalTitle').textContent = title;
     document.getElementById('modalRegion').textContent = `Region: ${region}`;
-    document.getElementById('modalPrice').textContent = `Price: ${price}`;
-    document.getElementById('modalPromoPrice').textContent = `Promo Price: ${promoPrice}`;
+    document.getElementById('modalPrice').textContent = '';
+    document.getElementById('modalPromoPrice').textContent = '';
+    document.getElementById('modalDescription').textContent = description ? `Deskripsi Wisata: ${description}` : '';
     document.getElementById('modalHashtag').textContent = `Hashtag: ${hashtag}`;
     currentPackageId = id;
     // Set booking button link
@@ -112,6 +113,27 @@ function populateModal(image, title, region, price, promoPrice, hashtag, id = nu
             window.location.href = '/booking/' + id;
         });
     }
+    // Hide comments section initially
+    $('#modalCommentsSection').hide();
+    $('#modalCommentsList').empty();
+}
+function populateModal(image, title, region, price, promoPrice, hashtag, id = null, description = '') {
+    document.getElementById('modalImage').src = image;
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalRegion').textContent = `Region: ${region}`;
+    document.getElementById('modalPrice').textContent = '';
+    document.getElementById('modalPromoPrice').textContent = '';
+    document.getElementById('modalDescription').textContent = description ? `Deskripsi Wisata: ${description}` : '';
+    document.getElementById('modalHashtag').textContent = `Hashtag: ${hashtag}`;
+    currentPackageId = id;
+    // Set booking button link
+    $('#modalBookingBtn').off('click').on('click', function() {
+        @if(!auth()->check())
+            window.location.href = '/login';
+        @else
+            if (id) window.location.href = '/booking/' + id;
+        @endif
+    });
     // Hide comments section initially
     $('#modalCommentsSection').hide();
     $('#modalCommentsList').empty();
@@ -128,6 +150,10 @@ function updateLikeStatus() {
 $(function() {
     // Show/hide comments section in modal
     $('#modalCommentBtn').on('click', function() {
+        @if(!auth()->check())
+            window.location.href = '/login';
+            return;
+        @endif
         $('#modalCommentsSection').toggle();
         if ($('#modalCommentsSection').is(':visible') && $('#modalCommentsList').is(':empty') && currentPackageId) {
             $.get('/package/' + currentPackageId + '/comments', function(data) {
@@ -142,6 +168,10 @@ $(function() {
 
     // Submit comment in modal
     $('#modalCommentForm').on('submit', function(e) {
+        @if(!auth()->check())
+            window.location.href = '/login';
+            return false;
+        @endif
         e.preventDefault();
         if (!currentPackageId) return;
         var input = $(this).find('input[name=comment]');
@@ -167,6 +197,10 @@ $(function() {
     });
 
     $('#modalLikeBtn').on('click', function() {
+        @if(!auth()->check())
+            window.location.href = '/login';
+            return;
+        @endif
         if (!currentPackageId) return;
         $.post({
             url: '/package/' + currentPackageId + '/like',
@@ -174,12 +208,6 @@ $(function() {
             success: function(data) {
                 $('#modalLikeCount').text(data.count);
                 $('#modalLikeText').text(data.liked ? 'Unlike' : 'Like');
-            },
-            error: function(xhr) {
-                if(xhr.status === 401) {
-                    // Show login modal instead of alert
-                    // Jika ada login modal, bisa ditampilkan di sini
-                }
             }
         });
     });

@@ -34,6 +34,7 @@
                 <a href="{{ route('member.card.pdf') }}" target="_blank" class="btn" style="background-color: #ffc107; color: #2D2766; text-align: left; display: inline-block; margin-left: 8px;">Cetak Member Card</a>
                 @else
                 <a href="#" class="btn" style="background-color: #2D2766; color: white; text-align: left; display: inline-block;" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+                <a href="/travelinkcenter" class="btn" style="background-color: #ffc107; color: #2D2766; text-align: left; display: inline-block; margin-left: 8px;">Login Admin</a>
                 @endauth
             </div>
             <div class="col-md-6 text-center">
@@ -83,7 +84,7 @@
                         <div class="position-absolute" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px;">
                             <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $package->promo_price }}</span>
                         </div>
-                        <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ $package->images[0] ?? 'default.jpg' }}', '{{ $package->name }}', '{{ $package->region }}', '{{ $package->price }}', '{{ $package->promo_price }}', '{{ $package->hashtag }}', {{ $package->id }})">View Detail</a>
+                        <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ Storage::url($package->images[0] ?? 'default.jpg') }}', '{{ $package->name }}', '{{ $package->region }}', '{{ $package->price }}', '{{ $package->promo_price }}', '{{ $package->hashtag }}', {{ $package->id }}, `{{ str_replace(['`', "'", "\n", "\r"], ['\\`', "\\'", ' ', ' '], $package->description) }}`)">View Detail</a>
                     </div>
                 </div>
             </div>
@@ -101,7 +102,7 @@
                         <div class="position-absolute" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px;">
                             <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $promo->promo_price }}</span>
                         </div>
-                        <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ $promo->images[0] ?? 'default.jpg' }}', '{{ $promo->name }}', '{{ $promo->region }}', '{{ $promo->price }}', '{{ $promo->promo_price }}', '{{ $promo->hashtag }}', {{ $promo->id }})">View Detail</a>
+                        <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ Storage::url($promo->images[0] ?? 'default.jpg') }}', '{{ $promo->name }}', '{{ $promo->region }}', '{{ $promo->price }}', '{{ $promo->promo_price }}', '{{ $promo->hashtag }}', {{ $promo->id }}, `{{ str_replace(['`', "'", "\n", "\r"], ['\\`', "\\'", ' ', ' '], $promo->description) }}`)">View Detail</a>
                     </div>
                 </div>
             </div>
@@ -225,20 +226,24 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
 let currentPackageId = null;
-function populateModal(image, title, region, price, promoPrice, hashtag, id = null) {
+function populateModal(image, title, region, price, promoPrice, hashtag, id = null, description = '') {
     document.getElementById('modalImage').src = image;
     document.getElementById('modalTitle').textContent = title;
     document.getElementById('modalRegion').textContent = `Region: ${region}`;
-    document.getElementById('modalPrice').textContent = `Price: ${price}`;
-    document.getElementById('modalPromoPrice').textContent = `Promo Price: ${promoPrice}`;
+    document.getElementById('modalPrice').textContent = '';
+    document.getElementById('modalPromoPrice').textContent = '';
+    document.getElementById('modalDescription').textContent = description ? `Deskripsi Wisata: ${description}` : '';
     document.getElementById('modalHashtag').textContent = `Hashtag: ${hashtag}`;
     currentPackageId = id;
     // Set booking button link
-    if (id) {
-        $('#modalBookingBtn').off('click').on('click', function() {
-            window.location.href = '/booking/' + id;
-        });
-    }
+    $('#modalBookingBtn').off('click').on('click', function() {
+        @if(!auth()->check())
+            var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+        @else
+            if (id) window.location.href = '/booking/' + id;
+        @endif
+    });
     // Hide comments section initially
     $('#modalCommentsSection').hide();
     $('#modalCommentsList').empty();
@@ -252,9 +257,15 @@ function updateLikeStatus() {
     });
 }
 
+
 $(function() {
     // Show/hide comments section in modal
     $('#modalCommentBtn').on('click', function() {
+        @if(!auth()->check())
+            var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+            return;
+        @endif
         $('#modalCommentsSection').toggle();
         if ($('#modalCommentsSection').is(':visible') && $('#modalCommentsList').is(':empty') && currentPackageId) {
             $.get('/package/' + currentPackageId + '/comments', function(data) {
@@ -269,6 +280,11 @@ $(function() {
 
     // Submit comment in modal
     $('#modalCommentForm').on('submit', function(e) {
+        @if(!auth()->check())
+            var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+            return false;
+        @endif
         e.preventDefault();
         if (!currentPackageId) return;
         var input = $(this).find('input[name=comment]');
@@ -294,6 +310,11 @@ $(function() {
     });
 
     $('#modalLikeBtn').on('click', function() {
+        @if(!auth()->check())
+            var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+            return;
+        @endif
         if (!currentPackageId) return;
         $.post({
             url: '/package/' + currentPackageId + '/like',
@@ -301,13 +322,6 @@ $(function() {
             success: function(data) {
                 $('#modalLikeCount').text(data.count);
                 $('#modalLikeText').text(data.liked ? 'Unlike' : 'Like');
-            },
-            error: function(xhr) {
-                if(xhr.status === 401) {
-                    // Show login modal instead of alert
-                    var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                    loginModal.show();
-                }
             }
         });
     });

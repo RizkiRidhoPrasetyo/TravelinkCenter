@@ -31,6 +31,9 @@ class TravelinkPackageResource extends Resource
                     ->label('Daerah')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Textarea::make('description')
+                    ->label('Deskripsi Wisata')
+                    ->required(),
                 Forms\Components\TextInput::make('price')
                     ->label('Harga Tempat Wisata')
                     ->required()
@@ -83,6 +86,9 @@ class TravelinkPackageResource extends Resource
                 Tables\Columns\TextColumn::make('region')
                     ->label('Daerah')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('description')
+                    ->label('Deskripsi Wisata')
+                    ->limit(50),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Harga Tempat Wisata')
                     ->sortable()

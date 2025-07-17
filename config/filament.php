@@ -26,7 +26,7 @@ return [
     */
 
     'auth' => [
-        // 'guard' => 'admin',
+        'guard' => 'admin',
     ],
 
         // 'echo' => [

@@ -11,7 +11,7 @@ class TravelinkPackage extends Model
 
     protected $guarded = ['id'];
 
-    protected $fillable = ['name', 'region', 'price', 'promo_price', 'hashtag', 'max_quota', 'images', 'category', 'expired_at'];
+    protected $fillable = ['name', 'region', 'price', 'promo_price', 'hashtag', 'max_quota', 'images', 'category', 'expired_at', 'description'];
 
     protected $casts = [
         'images' => 'array',
