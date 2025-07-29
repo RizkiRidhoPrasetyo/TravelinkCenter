@@ -39,20 +39,6 @@
                             style="background-color: {{ request()->is('top-deals') ? '#E87817' : 'transparent' }}; color: {{ request()->is('top-deals') ? 'white' : 'inherit' }}; 
                             border-radius: 10px; padding: 5px 10px; border: {{ request()->is('top-deals') ? '2px solid #2D2766' : 'none' }};">Top Deals</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->is('blog.html') ? 'active' : '' }}" href="#" id="outlookDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
-                            style="background-color: {{ request()->is('blog.html') ? '#E87817' : 'transparent' }}; color: {{ request()->is('blog.html') ? 'white' : 'inherit' }}; 
-                            border-radius: 10px; padding: 5px 10px; border: {{ request()->is('blog.html') ? '2px solid #2D2766' : 'none' }};"
-                            onclick="document.getElementById('outlookDropdownMenu').classList.toggle('show');">
-                            Outlook
-                        </a>
-                        <ul class="dropdown-menu" id="outlookDropdownMenu" aria-labelledby="outlookDropdown">
-                            <li><a class="dropdown-item" href="#">Calendar of Event</a></li>
-                            <li><a class="dropdown-item" href="#">Education</a></li>
-                            <li><a class="dropdown-item" href="#">Opinion</a></li>
-                            <li><a class="dropdown-item" href="#">Travel and Tourism Industry</a></li>
-                        </ul>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('travelinkclub') ? 'active' : '' }}" href="{{ route('travelinkclub') }}"
                             style="background-color: {{ request()->is('travelinkclub') ? '#ff7f00' : 'transparent' }}; color: {{ request()->is('travelinkclub') ? 'white' : 'inherit' }}; border-radius: 10px; padding: 5px 10px; border: {{ request()->is('travelinkclub') ? '2px solid #2D2766' : 'none' }};">Travelink Club</a>
@@ -71,6 +57,18 @@
 
     <!-- Footer Section -->
     <footer class="container-fluid bg-dark text-white py-3"> <!-- Reduced py-5 to py-3 for less vertical padding -->
+    {{-- <!-- Floating Translate Button -->
+    <div style="position: fixed; bottom: 30px; left: 30px; z-index: 9999;">
+        <div class="dropdown">
+            <button class="btn btn-primary rounded-circle shadow-lg dropdown-toggle" type="button" id="translateDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                <i class="bi bi-translate"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="translateDropdown">
+                <li><a class="dropdown-item" href="?lang=id">Bahasa Indonesia</a></li>
+                <li><a class="dropdown-item" href="?lang=en">English</a></li>
+            </ul>
+        </div>
+    </div> --}}
         <div class="row">
             <div class="col-md-4">
                 <h5 class="text-uppercase">Our Social Media</h5>
@@ -87,20 +85,20 @@
             <div class="col-md-4">
                 <h5 class="text-uppercase">Back to</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#" class="text-white">Home</a></li>
-                    <li><a href="#" class="text-white">Top Us Destination</a></li>
-                    <li><a href="#" class="text-white">Top Deals</a></li>
-                    <li><a href="#" class="text-white">Travelink Club</a></li>
-                    <li><a href="#" class="text-white">Outlooks</a></li>
+                    <li><a href="/" class="text-white">Home</a></li>
+                    <li><a href="{{ route('top-destinations') }}" class="text-white">Top Destination</a></li>
+                    <li><a href="{{ route('top-deals') }}" class="text-white">Top Deals</a></li>
+                    <li><a href="{{ route('travelinkclub') }}" class="text-white">Travelink Club</a></li>
+                    <li><a href="{{ route('lifestyle') }}" class="text-white">Lifestyle</a></li>
                 </ul>
             </div>
             <div class="col-md-4">
                 <div class="p-4" style="background-color: #FFC247; border-radius: 10px;">
-                    <h5 class="text-uppercase fw-bold">Question Form</h5>
+                    <h5 class="text-uppercase fw-bold">Penilaian Kinerja </h5>
                     <p>-</p>
-                    <form class="d-flex" action="https://forms.gle/your-google-form-link" method="get" target="_blank"> <!-- Updated to redirect to Google Form -->
-                        <input type="text" class="form-control me-2" placeholder="Enter your question" style="border-radius: 20px 0 0 20px;">
-                        <button type="submit" class="btn btn-dark" style="border-radius: 0 20px 20px 0;">Submit</button>
+                    <form class="d-flex" action="https://docs.google.com/forms/d/e/1FAIpQLSfIQ_w5n7Qbu_-Gl2MBT7bgErEHHA2srKQAr47iPnMwnAMyQQ/viewform?usp=sharing&ouid=111930626122547914321" method="get" target="_blank"> <!-- Updated to redirect to Google Form -->
+                        <input type="text" class="form-control me-2" placeholder="Tekan button berikut ini" style="border-radius: 20px 0 0 20px;">
+                        <button type="submit" class="btn btn-dark" style="border-radius: 0 20px 20px 0;">Isi Form</button>
                     </form>
                 </div>
             </div>
@@ -112,9 +110,9 @@
         </div>
     </footer>
 
-    <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
-        </script>
+    {{-- <!-- Bootstrap JS & Bootstrap Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"> --}}
 </body>
 
 </html>

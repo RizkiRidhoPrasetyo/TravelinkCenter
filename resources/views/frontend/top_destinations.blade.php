@@ -14,17 +14,6 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="dealsNavbar">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Wisata</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Kuliner</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Penginapan</a>
-                    </li>
-                </ul>
             </div>
         </div>
     </nav>
@@ -32,21 +21,31 @@
 <div class="container py-5">
     <h2 class="text-center fw-bold mb-4">Top Destinations</h2>
     <div class="row g-4">
+        @php $hasTopDestinations = false; @endphp
         @foreach($topDestinations as $destination)
-        <div class="col-md-3 mb-4"> <!-- Applied consistent styling from Club section -->
-            <div class="card border-0 shadow-sm h-100 position-relative">
-                <img src="{{ Storage::url($destination->images[0] ?? 'default.jpg') }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ $destination->name }}">
-                <div class="card-body text-center">
-                    <h5 class="card-title">{{ $destination->name }}</h5>
-                    <p class="card-text">{{ $destination->region }}</p>
-                    <div class="position-absolute" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px;"> <!-- Promo Price overlay -->
-                        <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $destination->promo_price }}</span>
+            @if($destination->category === 'Top Destination')
+                @php $hasTopDestinations = true; @endphp
+                <div class="col-md-3 mb-4">
+                    <div class="card border-0 shadow-sm h-100 d-flex flex-column">
+                        <img src="{{ Storage::url($destination->images[0] ?? 'default.jpg') }}" class="card-img-top" style="height: 200px; object-fit: cover; border-top-left-radius: .5rem; border-top-right-radius: .5rem;" alt="{{ $destination->name }}">
+                        <div class="position-absolute promo-price-overlay" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px; margin-bottom: 1.5rem;"> <!-- Promo Price overlay -->
+                            <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $destination->promo_price }}</span>
+                        </div>
+                        <div class="card-body text-center" style="padding-top: 2.5rem;">
+                            <h5 class="card-title mb-2" style="font-size: 1.1rem; font-weight: 600; min-height: 48px;">{{ $destination->name }}</h5>
+                            <p class="card-text mb-1" style="color: #555; font-size: 0.95rem;">{{ $destination->region }}</p>
+                            <span class="badge bg-info mb-2">Kategori: {{ $destination->category }}</span>
+                            <a href="#" class="btn mt-2 w-100" style="background-color: #2D2766; color: white; font-size: 0.95rem; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ Storage::url($destination->images[0] ?? 'default.jpg') }}', '{{ $destination->name }}', '{{ $destination->region }}', '{{ $destination->price }}', '{{ $destination->promo_price }}', '{{ $destination->hashtag }}', {{ $destination->id }}, `{{ str_replace(['`', "'", "\n", "\r"], ['\\`', "\\'", ' ', ' '], $destination->description) }}`)">View Detail</a>
+                        </div>
                     </div>
-                            <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ Storage::url($destination->images[0] ?? 'default.jpg') }}', '{{ $destination->name }}', '{{ $destination->region }}', '{{ $destination->price }}', '{{ $destination->promo_price }}', '{{ $destination->hashtag }}', {{ $destination->id }}, `{{ str_replace(['`', "'", "\n", "\r"], ['\\`', "\\'", ' ', ' '], $destination->description) }}`)">View Detail</a>
                 </div>
+            @endif
+        @endforeach
+        @if(!$hasTopDestinations)
+            <div class="col-12 text-center">
+                <p>Data Top Destination tidak ditemukan.</p>
             </div>
-        </div>
-        @endforeach 
+        @endif
     </div>
 </div>
 
@@ -73,7 +72,7 @@
                         <i class="bi bi-hand-thumbs-up"></i> <span id="modalLikeText">Like</span> (<span id="modalLikeCount">0</span>)
                     </button>
                     <button class="btn btn-outline-secondary btn-sm" id="modalCommentBtn"><i class="bi bi-chat"></i> Comment</button>
-                    <button class="btn btn-outline-success btn-sm" id="modalShareBtn"><i class="bi bi-share"></i> Share</button>
+                    {{-- <button class="btn btn-outline-success btn-sm" id="modalShareBtn"><i class="bi bi-share"></i> Share</button> --}}
                 </div>
                 <div class="comments-section mt-2" id="modalCommentsSection" style="display:none;">
                     <form class="form-comment d-flex mb-2" id="modalCommentForm">

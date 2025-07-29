@@ -17,7 +17,18 @@ class Booking extends Model
         'phone',
         'date',
         'notes',
+        'status', // add status field
     ];
+
+    // protected static function booted()
+    // {
+    //     static::deleted(function ($booking) {
+    //         $package = \App\Models\TravelinkPackage::find($booking->package_id);
+    //         if ($package) {
+    //             $package->increment('max_quota');
+    //         }
+    //     });
+    // }
 
     public function user()
     {

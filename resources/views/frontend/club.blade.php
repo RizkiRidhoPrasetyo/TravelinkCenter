@@ -20,7 +20,7 @@
                 @auth
                 <div style="font-size: 38px; font-weight: bold; color: #2D2766; line-height:1; font-family: 'Covered By Your Grace', cursive;">Hello, Welcome Traveller !! </div>
                 @endauth
-                <h1 class="card-title card-title-hero" style="font-size: 60px; font-weight: semi bold; text-align: left; margin-top:0;">Enjoy the thrill of a
+                <h1 class="card-title card-title-hero" style="font-size: 60px; font-weight: bold; text-align: left; margin-top:0;">Enjoy the thrill of a
                     <span style="font-family: 'Covered By Your Grace', cursive; color: yellow;">Vacation</span> with many offers from us
                 </h1>
                 <p class="card-text" style="text-align: left;">Register with us in the following form to enjoy more services</p>
@@ -34,7 +34,6 @@
                 <a href="{{ route('member.card.pdf') }}" target="_blank" class="btn" style="background-color: #ffc107; color: #2D2766; text-align: left; display: inline-block; margin-left: 8px;">Cetak Member Card</a>
                 @else
                 <a href="#" class="btn" style="background-color: #2D2766; color: white; text-align: left; display: inline-block;" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
-                <a href="/travelinkcenter" class="btn" style="background-color: #ffc107; color: #2D2766; text-align: left; display: inline-block; margin-left: 8px;">Login Admin</a>
                 @endauth
             </div>
             <div class="col-md-6 text-center">
@@ -72,23 +71,36 @@
     </div>
 
     <div class="container mt-5">
-        <div class="row mt-5">
-            <h3 class="text-center mb-4">Current Offer</h3>
-            @foreach($travelinkPackages as $package)
-            <div class="col-md-3 mb-4">
-                <div class="card border-0 shadow-sm h-100 position-relative">
-                    <img src="{{ Storage::url($package->images[0] ?? 'default.jpg') }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ $package->name }}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ $package->name }}</h5>
-                        <p class="card-text">Region: {{ $package->region }}</p>
-                        <div class="position-absolute" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px;">
-                            <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $package->promo_price }}</span>
+        <div class="container py-5">
+            <h2 class="text-center fw-bold mb-4">Current Offer</h2>
+            <div class="row g-4">
+                @php $hasCurrentOffer = false; @endphp
+                @foreach($travelinkPackages as $package)
+                    @php $hasCurrentOffer = true; @endphp
+                    <div class="col-md-3 mb-4">
+                        <div class="card border-0 shadow-sm h-100 position-relative">
+                            <img src="{{ Storage::url($package->images[0] ?? 'default.jpg') }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ $package->name }}">
+                            <div class="position-absolute promo-price-overlay" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px;">
+                                <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $package->promo_price }}</span>
+                            </div>
+                            <div class="card-body text-center" style="padding-top: 2.5rem;">
+                                <h5 class="card-title">{{ $package->name }}</h5>
+                                <p class="card-text">{{ $package->region }}</p>
+                                <span class="badge bg-info mb-2">Kategori: {{ $package->category }}</span>
+                                <span class="badge bg-secondary mb-2">Sisa Kuota: {{ $package->max_quota }}</span>
+                                <a href="#" class="btn mt-2 w-100" style="background-color: #2D2766; color: white; font-size: 0.95rem; border-radius: 6px;" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ Storage::url($package->images[0] ?? 'default.jpg') }}', '{{ $package->name }}', '{{ $package->region }}', '{{ $package->price }}', '{{ $package->promo_price }}', '{{ $package->hashtag }}', {{ $package->id }}, `{{ str_replace(['`', "'", "\n", "\r"], ['\\`', "\\'", ' ', ' '], $package->description) }}`)">
+                                    View Detail
+                                </a>
+                            </div>
                         </div>
-                        <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ Storage::url($package->images[0] ?? 'default.jpg') }}', '{{ $package->name }}', '{{ $package->region }}', '{{ $package->price }}', '{{ $package->promo_price }}', '{{ $package->hashtag }}', {{ $package->id }}, `{{ str_replace(['`', "'", "\n", "\r"], ['\\`', "\\'", ' ', ' '], $package->description) }}`)">View Detail</a>
                     </div>
-                </div>
+                @endforeach
+                @if(!$hasCurrentOffer)
+                    <div class="col-12 text-center">
+                        <p>Data Current Offer tidak ditemukan.</p>
+                    </div>
+                @endif
             </div>
-            @endforeach
         </div>
         <div class="row mt-5">
             <h3 class="text-center mb-4">Promo that will expire</h3>
@@ -99,6 +111,8 @@
                     <div class="card-body text-center">
                         <h5 class="card-title">{{ $promo->name }}</h5>
                         <p class="card-text">Promo ends on: {{ $promo->expired_at->format('d M Y') }}</p>
+                        <p class="card-text mb-1"><span class="badge bg-secondary">Kuota Maksimal: {{ $promo->max_quota }}</span></p>
+                        <p class="card-text mb-1"><span class="badge bg-info">Kategori: {{ $promo->category }}</span></p>
                         <div class="position-absolute" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px;">
                             <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $promo->promo_price }}</span>
                         </div>
@@ -170,15 +184,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="container mt-5" id="travelink-point">
-            <div class="row justify-content-center">
-                <div class="col-md-8 text-center">
-                    <h2 class="fw-bold">Travelink Club Point</h2>
-                    <p>Collect points every time you use our services and redeem them for exclusive rewards, discounts, or special offers. Stay tuned for more details about our point system and how you can maximize your benefits as a loyal member!</p>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Modal Popup -->
@@ -205,14 +210,14 @@
                         </button>
                         <button class="btn btn-outline-secondary btn-sm" id="modalCommentBtn"><i class="bi bi-chat"></i> Ulasan</button>
                     </div>
-                    <!-- Share button only, no rating stats -->
+                    {{-- <!-- Share button only, no rating stats -->
                     <div class="comments-section mt-2" id="modalCommentsSection" style="display:none;">
                         <form class="form-comment d-flex mb-2" id="modalCommentForm">
                             <input type="text" name="comment" class="form-control form-control-sm me-2" placeholder="Write a comment..." required>
                             <button type="submit" class="btn btn-primary btn-sm">Post</button>
                         </form>
                         <div class="comments-list" id="modalCommentsList"></div>
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

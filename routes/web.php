@@ -33,8 +33,8 @@ Route::post('/booking', [BookingController::class, 'store'])->name('booking.stor
 Route::get('/', function () {
     $topDeals = TravelinkPackage::whereNotNull('promo_price')->take(4)->get();
     $topDestinations = TravelinkPackage::take(4)->get();
-
-    return view('frontend.home', compact('topDeals', 'topDestinations'));
+    $wisataRekomendasi = TravelinkPackage::all();
+    return view('frontend.home', compact('topDeals', 'topDestinations', 'wisataRekomendasi'));
 });
 
 
@@ -44,6 +44,7 @@ Route::get('/travelinkclub', [clubcontroller::class, 'index'])->name('travelinkc
 
 // Route autentikasi akan dihandle oleh Laravel Breeze
 require __DIR__.'/auth.php';
+require __DIR__.'/password.php';
 
 // Route paket travelink
 Route::get('/Paket-travel', [TravelinkPackageController::class, 'index'])->name('packagetravel.index');

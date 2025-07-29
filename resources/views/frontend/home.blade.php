@@ -10,7 +10,7 @@
                 <div class="row justify-content-center align-items-center text-center" style="background-image: url('{{ asset('assets/images/malang-hero.jpg') }}'); background-size: cover; background-position: center; height: 500px; position: relative;">
                     <div class="col-12 text-center" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;">
                         <h1 class="display-4 fw-bold" style="color: white; text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);">Follow Our Instagram!</h1>
-                        <p class="lead" style="color: white; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">Get promo info, travel inspiration, and the latest updates from Travelink Center on Instagram <b>@travelinkcenter</b>.</p>
+                        <p class="lead" style="color: white; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);">Get promo info, travel inspiration, and the latest updates from Travelink Center on Instagram</b>.</p>
                         <a href="https://instagram.com/travelinkcenter" target="_blank" rel="noopener" class="btn btn-lg rounded-pill px-4 shadow" style="background-color: #ffc107; color: black;">Kunjungi Instagram</a>
                     </div>
                     <div class="position-absolute w-100 h-100" style="top: 0; left: 0; z-index: 1;">
@@ -96,47 +96,32 @@
         </div>
     </div>
 
-    <!-- Top Deals Section -->
+    <!-- Wisata Rekomendasi Section -->
     <div class="container py-5">
-        <h2 class="text-center fw-bold mb-4">Top Deals</h2>
+        <h2 class="text-center fw-bold mb-4">Wisata Rekomendasi</h2>
         <div class="row g-4">
-            @foreach($topDeals as $deal)
-            <div class="col-md-3 mb-4"> <!-- Applied consistent styling from Club section -->
-                <div class="card border-0 shadow-sm h-100 position-relative">
-                    <img src="{{ Storage::url($deal->images[0] ?? 'default.jpg') }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ $deal->name }}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ $deal->name }}</h5>
-                        <p class="card-text">{{ $deal->region }}</p>
-                        <div class="position-absolute" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px;"> <!-- Promo Price overlay -->
-                            <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $deal->promo_price }}</span>
+            @if(isset($wisataRekomendasi) && count($wisataRekomendasi) > 0)
+                @foreach($wisataRekomendasi as $wisata)
+                    <div class="col-md-3 mb-4">
+                        <div class="card border-0 shadow-sm h-100 position-relative">
+                            <img src="{{ Storage::url($wisata->images[0] ?? 'default.jpg') }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ $wisata->name }}">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ $wisata->name }}</h5>
+                                <p class="card-text">{{ $wisata->region }}</p>
+                                <span class="badge bg-info mb-2">Kategori: {{ $wisata->category }}</span>
+                                <div class="position-absolute" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px;">
+                                    <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $wisata->promo_price }}</span>
+                                </div>
+                                <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ Storage::url($wisata->images[0] ?? 'default.jpg') }}', '{{ $wisata->name }}', '{{ $wisata->region }}', '{{ $wisata->price }}', '{{ $wisata->promo_price }}', '{{ $wisata->hashtag }}', {{ $wisata->id }}, `{{ str_replace(['`', "'", "\n", "\r"], ['\\`', "\\'", ' ', ' '], $wisata->description) }}`)">View Detail</a>
+                            </div>
                         </div>
-                        <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ Storage::url($deal->images[0] ?? 'default.jpg') }}', '{{ $deal->name }}', '{{ $deal->region }}', '{{ $deal->price }}', '{{ $deal->promo_price }}', '{{ $deal->hashtag }}', {{ $deal->id }}, `{{ str_replace(['`', "'", "\n", "\r"], ['\\`', "\\'", ' ', ' '], $deal->description) }}`)">View Detail</a>
                     </div>
+                @endforeach
+            @else
+                <div class="col-12 text-center">
+                    <p>Data wisata rekomendasi tidak ditemukan.</p>
                 </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-
-    <!-- Top Destinations Section -->
-    <div class="container py-5">
-        <h2 class="text-center fw-bold mb-4">Top Destinations</h2>
-        <div class="row g-4">
-            @foreach($topDestinations as $destination)
-            <div class="col-md-3 mb-4"> <!-- Applied consistent styling from Club section -->
-                <div class="card border-0 shadow-sm h-100 position-relative">
-                    <img src="{{ Storage::url($destination->images[0] ?? 'default.jpg') }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ $destination->name }}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ $destination->name }}</h5>
-                        <p class="card-text">{{ $destination->region }}</p>
-                        <div class="position-absolute" style="top: 50%; right: 0; transform: translateY(-50%); background-color: #FFD700; padding: 10px; border-radius: 5px;"> <!-- Promo Price overlay -->
-                            <span style="font-weight: bold; color: #2D2766;">Promo Price: {{ $destination->promo_price }}</span>
-                        </div>
-                        <a href="#" class="btn" style="background-color: #2D2766; color: white;" class="mt-2" data-bs-toggle="modal" data-bs-target="#detailModal" onclick="populateModal('{{ Storage::url($destination->images[0] ?? 'default.jpg') }}', '{{ $destination->name }}', '{{ $destination->region }}', '{{ $destination->price }}', '{{ $destination->promo_price }}', '{{ $destination->hashtag }}', {{ $destination->id }}, `{{ str_replace(['`', "'", "\n", "\r"], ['\\`', "\\'", ' ', ' '], $destination->description) }}`)">View Detail</a>
-                    </div>
-                </div>
-            </div>
-            @endforeach 
+            @endif
         </div>
     </div>
 
@@ -246,7 +231,7 @@
                             <i class="bi bi-hand-thumbs-up"></i> <span id="modalLikeText">Like</span> (<span id="modalLikeCount">0</span>)
                         </button>
                         <button class="btn btn-outline-secondary btn-sm" id="modalCommentBtn"><i class="bi bi-chat"></i> Comment</button>
-                        <button class="btn btn-outline-success btn-sm" id="modalShareBtn"><i class="bi bi-share"></i> Share</button>
+                        {{-- <button class="btn btn-outline-success btn-sm" id="modalShareBtn"><i class="bi bi-share"></i> Share</button> --}}
                     </div>
                     <div class="comments-section mt-2" id="modalCommentsSection" style="display:none;">
                         <form class="form-comment d-flex mb-2" id="modalCommentForm">

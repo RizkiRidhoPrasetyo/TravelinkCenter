@@ -42,10 +42,22 @@ class BookingResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('phone'),
                 \Filament\Tables\Columns\TextColumn::make('date'),
                 \Filament\Tables\Columns\TextColumn::make('notes')->limit(30),
+                \Filament\Tables\Columns\TextColumn::make('status')->label('Status')->badge()->color(fn($state) => $state === 'active' ? 'success' : 'warning'),
                 \Filament\Tables\Columns\TextColumn::make('created_at')->dateTime(),
             ])
             ->filters([
                 // Tambahkan filter jika perlu
+            ])
+            ->actions([
+                Tables\Actions\Action::make('accept')
+                    ->label('Accept')
+                    ->visible(fn($record) => $record->status === 'pending')
+                    ->action(function ($record) {
+                        $record->status = 'active';
+                        $record->save();
+                    })
+                    ->color('success')
+                    ->icon('heroicon-o-check'),
             ]);
     }
 

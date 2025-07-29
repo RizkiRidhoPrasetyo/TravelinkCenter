@@ -32,13 +32,21 @@ class TravelinkPackageController extends Controller
 
     public function topDestinations()
     {
-        $topDestinations = TravelinkPackage::all(); // Fetch all TravelinkPackage data
+        $topDestinations = TravelinkPackage::where('category', 'top_destination')->get();
+        // Jika data kosong, fallback tampilkan semua data
+        if ($topDestinations->isEmpty()) {
+            $topDestinations = TravelinkPackage::all();
+        }
         return view('frontend.top_destinations', compact('topDestinations'));
     }
 
     public function topDeals()
     {
-        $topDeals = TravelinkPackage::all(); // Fetch all TravelinkPackage data
+        $topDeals = TravelinkPackage::where('category', 'top_deals')->get();
+        // Jika data kosong, fallback tampilkan semua data
+        if ($topDeals->isEmpty()) {
+            $topDeals = TravelinkPackage::all();
+        }
         return view('frontend.top_deals', compact('topDeals'));
     }
 }

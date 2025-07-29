@@ -167,6 +167,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\Filament\TravelinkcenterPanelProvider::class,
+        App\Providers\TravelinkcenteradminPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
     ])->toArray(),
 

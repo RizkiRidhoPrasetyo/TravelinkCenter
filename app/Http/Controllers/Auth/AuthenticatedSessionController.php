@@ -10,9 +10,6 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
 public function create()
     {
         // Jika user sudah login, langsung redirect ke travelinkclub
@@ -57,9 +54,7 @@ public function create()
         ])->onlyInput('email');
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
+
     public function destroy(Request $request)
     {
         Auth::logout();
